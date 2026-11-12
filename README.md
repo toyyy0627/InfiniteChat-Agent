@@ -204,7 +204,7 @@ addKnowledgeToRag
 
 - 上表体现组合优化收益，不代表各模块的独立贡献。
 - 负样本结果仅覆盖本评测集的 15 道题。
-- 当前仓库提供 Java 评测入口；完整评测集、Python/Ragas 脚本及原始报告尚未纳入版本管理，暂不构成完整的可复现实验包。
+- 当前仓库提供 Java 评测入口，以及 `evaluation/` 下的 Python 评测脚本、依赖列表及脱敏后的评测集。上表为原始 181 题版本的历史实验结果；公开数据集移除了一条涉及个人信息的问题，尚未基于该版本重新评测。
 
 ### 评测入口
 
@@ -365,3 +365,14 @@ src/main/resources/
 ├── static/              # Web 页面与静态资源
 └── system-prompt/       # 系统提示词
 ```
+
+评测文件：
+
+```text
+evaluation/
+├── ragas_eval.py       # 评测脚本
+├── requirements.txt    # Python 依赖
+└── test_dataset.json   # 脱敏评测集
+```
+
+评测脚本需在 `evaluation` 目录下运行，读取 `DASHSCOPE_API_KEY` 环境变量，通过 `EVAL_ENDPOINT` 指定 Java 评测接口。运行会调用模型并产生费用，默认抽样 15 题，`SAMPLE_SIZE=all` 表示全量评测。

@@ -1,0 +1,721 @@
+[
+  {
+    "question": "如果要跟别人提起这套助手，它正式的名字应该怎么称呼？",
+    "reference": "本软件名为「千言」，寓意\"千言万语，尽在其中\"。"
+  },
+  {
+    "question": "在英文场景下，千言这套系统对应的叫法是什么？",
+    "reference": "千言的英文名称是 InfiniteChat。"
+  },
+  {
+    "question": "从产品品类上看，千言该归到哪一类应用里去？",
+    "reference": "千言是一款即时通讯（IM）软件。"
+  },
+  {
+    "question": "千言这产品最想向用户传达的那个核心理念是什么？",
+    "reference": "让沟通更自由，让表达更千言万语。"
+  },
+  {
+    "question": "能不能把千言·AI 智能助手从头到尾捋一遍——它怎么来的、定位是什么、主要能干哪些事？",
+    "reference": "千言·AI 智能助手是一个基于 Java + LangChain4j 构建的企业级 Agent 系统，诞生于 AI 应用开发技术学习的迫切需求，之后会作为千言（InfiniteChat，一款即时通讯软件）的智能引擎嵌入到千言中。项目定位为轻量、安全、智能的对话助手，目标用户为个人用户、小型团队与社区交流者。核心能力包括：\n1. 深度整合 RAG 与 MCP：支持基于 PgVector 的高精度私有知识检索；\n2. Redis 分布式会话记忆：多轮对话上下文持久化、会话隔离；\n3. 动态知识植入：允许用户通过自然语言指令实时将新知识反向同步至文档与向量库，实现智能体的记忆自进化；\n4. 联网搜索：通过 MCP 接入搜索服务获取实时信息；\n5. 智能邮件发送：以工具调用方式完成自然语言驱动的邮件发送；\n6. 全链路可观测性监控：Prometheus + Grafana 采集与可视化模型调用指标；\n7. Prompt 工程实践：通过系统提示词约束角色、知识边界、安全合规与输出格式。"
+  },
+  {
+    "question": "用通俗的话讲，所谓的 Agent 到底是什么样的 AI？它跟传统那种一问一答的 AI 区别在哪？",
+    "reference": "Agent 是一种能够感知环境、自主决策并采取行动以实现特定目标的 AI 系统。与传统问答式 AI 不同，它具备持续性的任务执行能力，能将复杂任务分解为多个步骤，并通过工具调用、推理和反馈循环来完成目标。"
+  },
+  {
+    "question": "Agent 内部，真正拍板做决定的是哪一块？它具体管哪些事？",
+    "reference": "核心决策引擎是大语言模型（LLM），负责理解用户意图和任务目标、制定任务执行计划、进行推理和判断、生成行动指令。"
+  },
+  {
+    "question": "Agent 的短期记忆，平时都拿来装些什么、管些什么？",
+    "reference": "短期记忆存储当前对话上下文，维护任务执行过程中的临时信息。"
+  },
+  {
+    "question": "Agent 的长期记忆通常靠什么技术落地？里头一般会存哪些东西？",
+    "reference": "长期记忆通常使用向量数据库实现，存储用户偏好和历史交互，积累领域知识和经验。"
+  },
+  {
+    "question": "Agent 能调用的工具，大致能归成几类？",
+    "reference": "包含五类：搜索工具（网络搜索、知识库检索）、计算工具（代码执行、数学运算）、API 调用（第三方服务集成）、数据库操作（数据查询和更新）、文件操作（读写文件、处理文档）。"
+  },
+  {
+    "question": "Agent 里的规划（Planning）部分，主要在做哪些事情？",
+    "reference": "负责将复杂任务分解为可执行的子任务，包括任务分解（大任务拆小步骤）、依赖分析（确定执行顺序）、动态调整（根据执行结果调整计划）。"
+  },
+  {
+    "question": "Agent 中做反思、复盘的那一块，起的是什么作用？",
+    "reference": "评估行动结果是否符合预期，从错误中学习并调整策略，进行自我批评和改进。"
+  },
+  {
+    "question": "材料里都拿哪几个当下常见的大语言模型来举例？",
+    "reference": "DeepSeek、Qwen3-Max、GPT-5、Claude、Gemini 等。"
+  },
+  {
+    "question": "光看能力，Agent 相比传统 AI 到底强在哪儿？",
+    "reference": "从\"给答案\"升级到\"做事情\"——具备自动化与半自动化执行能力，可进行跨系统跨工具的复杂流程编排（RPA × LLM），并通过检索/数据库查询实现实时可靠的事实获取以降低幻觉。"
+  },
+  {
+    "question": "一个完整的 Agent 是由哪几大块拼起来的？每一块分别管什么，麻烦一块一块说。",
+    "reference": "Agent 由六大核心模块组成：\n1. 大语言模型（LLM）：核心决策引擎，负责理解用户意图和任务目标、制定任务执行计划、进行推理判断并生成行动指令，常用模型有 DeepSeek、Qwen3-Max、GPT-5、Claude、Gemini 等；\n2. 记忆系统（Memory）：短期记忆存储当前对话上下文与任务临时信息；长期记忆存储用户偏好、历史交互与领域知识经验，通常用向量数据库实现；\n3. 工具集（Tools）：通过调用外部工具扩展能力，包括搜索工具、计算工具、API 调用、数据库操作、文件操作五类；\n4. 规划模块（Planning）：将复杂任务分解为可执行子任务，涵盖任务分解、依赖分析与动态调整；\n5. 行动模块（Action）：执行具体操作，包括调用工具和 API、与环境交互、生成中间结果；\n6. 反馈与反思（Reflection）：评估行动结果是否符合预期，从错误中学习并调整策略，进行自我批评和改进。"
+  },
+  {
+    "question": "LangChain4j 这个框架，是用来做什么的？",
+    "reference": "LangChain4j 是专为 Java 和 Kotlin 开发者设计的 AI Agent 开发框架，把 Python 生态中 LangChain 的核心理念和能力完整移植到 JVM 平台。一句话：LangChain4j = LangChain 的 Java 原生实现 + JVM 生态深度集成。"
+  },
+  {
+    "question": "Python 那边不是有现成的 LangChain 吗，为什么这项目不直接跨语言调用它，而要单独用 LangChain4j？",
+    "reference": "跨语言调用会带来复杂性、性能损耗以及运维成本；LangChain4j 不是简单的 Python 移植，而是针对 Java/JVM 生态深度优化的原生 Agent 开发框架。"
+  },
+  {
+    "question": "LangChain4j 自带了哪种主流的 Agent 推理模式？",
+    "reference": "支持 ReAct（Reasoning + Acting）模式。"
+  },
+  {
+    "question": "在函数调用（Function Calling）方面，LangChain4j 的支持程度如何？",
+    "reference": "原生支持 Function Calling，无需额外适配层。"
+  },
+  {
+    "question": "LangChain4j 可以和哪些常见的 Java 框架、监控方案配合着用？",
+    "reference": "天然集成 Spring Boot / Quarkus 等主流框架，支持 JVM 成熟的监控体系（JMX、Micrometer），并可无缝对接数据库连接池、消息队列等企业级中间件。"
+  },
+  {
+    "question": "用 LangChain4j，在类型安全上能带来什么好处？",
+    "reference": "编译期类型检查，减少运行时错误。"
+  },
+  {
+    "question": "和 GraalVM 一起用的时候，LangChain4j 有什么额外收益？",
+    "reference": "支持 GraalVM Native Image，应用启动时间可达毫秒级。"
+  },
+  {
+    "question": "本项目把 LangChain4j 的主库固定在了哪个版本？",
+    "reference": "LangChain4j 核心版本为 1.17.2，配套社区组件版本为 1.17.2-beta27，通过 langchain4j-bom 与 langchain4j-community-bom 两个 BOM 统一约束子模块版本。升级原因是 rerank 所需的 QwenScoringModel 从社区库 1.17.0-beta27 才开始提供。"
+  },
+  {
+    "question": "LangChain4j 完整实现了哪些核心抽象概念？",
+    "reference": "完整实现了 Chain、Agent、Memory、Tools 等核心概念。"
+  },
+  {
+    "question": "LangChain4j 最亮眼的优势可以概括成哪三条？请一条条展开说说。",
+    "reference": "LangChain4j 的核心优势体现在三个方面：\n1. 完整的 Agent 能力移植：完整实现 Chain、Agent、Memory、Tools 等核心概念，支持 ReAct（Reasoning + Acting）模式，原生支持 Function Calling 而无需额外适配层；\n2. 深度融合 Java 企业栈：天然集成 Spring Boot / Quarkus 等主流框架，支持 JVM 成熟的监控体系（JMX、Micrometer），无缝对接数据库连接池、消息队列等企业级中间件；\n3. 类型安全与性能优势：编译期类型检查减少运行时错误，依托 JVM 优化的内存管理和并发模型，并支持 GraalVM Native Image，实现毫秒级启动。\n   正因如此，对庞大的 Java 企业应用生态而言，LangChain4j 避免了跨语言调用的复杂性、性能损耗与运维成本，成为 JVM 平台构建 Agent 的首选框架。"
+  },
+  {
+    "question": "搭这套工程，Spring Boot 和 JDK 分别得用哪个版本？",
+    "reference": "SpringBoot 3.5.9，JDK 17（Maven 3.6.3）。"
+  },
+  {
+    "question": "项目里负责对话的那个大模型，用的是哪一款？",
+    "reference": "项目的对话模型与流式对话模型均选用 qwen3-max，通过 DashScope（百炼）接入。"
+  },
+  {
+    "question": "把文字变成向量这一步，靠的是哪个模型？",
+    "reference": "text-embedding-v4。"
+  },
+  {
+    "question": "项目里 Redis 和 PgVector 分别用的哪个版本？",
+    "reference": "Redis 8.4.0，PgVector 15.15。"
+  },
+  {
+    "question": "做监控的 Prometheus 和 Grafana，各自用的是哪个版本？",
+    "reference": "Prometheus 3.7.3，Grafana 12.3.0。"
+  },
+  {
+    "question": "那份 system prompt 放在哪个目录下、文件名叫什么？",
+    "reference": "放在 resources 目录下的 system-prompt 包中，文件名为 chat-bot.txt。"
+  },
+  {
+    "question": "要让 AiChat 接口用上这份系统提示词，得怎么弄？",
+    "reference": "在接口方法上使用注解 @SystemMessage(fromResource = \"system-prompt/chat-bot.txt\")，从资源文件加载系统提示词。"
+  },
+  {
+    "question": "提示词里要求：每句回答的结尾都必须带上什么？",
+    "reference": "每次回复结尾必须带一个感叹号。"
+  },
+  {
+    "question": "系统提示词对答复的格式，提出了哪些必须遵守的要求？",
+    "reference": "输出必须为纯文本格式，换行严格使用 \\n 表示。"
+  },
+  {
+    "question": "千言的那份系统提示词，给 AI 设了怎样的人设和行为规矩？麻烦完整列出来并逐条解释。",
+    "reference": "系统提示词首先设定角色：你是\"千言\"AI 助手，由先进大模型驱动，致力于提供精准、高效、友好的帮助；回答务必简明扼要、语气积极热情、直击问题核心；绝不冗长、不总结、不提供链接；每次回复结尾必须带一个感叹号。随后规定五条规则：\n1. 知识边界：仅限根据获取的知识回答问题，不得编造、推测或添加任何未明确提及的信息；\n2. 日常交互：若为日常普通问题（如天气、问候、生活常识等），可像普通人一样简短自然地回应；\n3. 安全合规（重要）：严禁生成任何政治敏感、暴力色情、辱骂攻击或不文明的词汇与内容；严格保护隐私，涉及密码、身份证号、银行卡、家庭住址等敏感私人信息时必须忽略或模糊处理，仅在执行邮件发送任务时允许使用必要的邮箱地址；\n4. 格式要求：输出必须为纯文本格式，换行严格使用 \\n 表示；\n5. 语气约束：所有回复结尾必须带一个感叹号。"
+  },
+  {
+    "question": "让模型能记住前几轮聊了什么、保持连贯，这种能力具体是指什么？",
+    "reference": "会话记忆是在多次用户交互（多轮对话）中，自动保存并复用历史消息上下文的能力，使大模型能\"记住\"之前的对话内容，实现连贯、上下文感知的交互。"
+  },
+  {
+    "question": "所谓的会话隔离，到底是为了解决什么问题？",
+    "reference": "在多用户并发访问的对话系统中，通过唯一会话标识（如 memory_id）对每个用户的对话上下文（历史消息序列）进行逻辑或物理隔离，确保状态互不污染的技术机制。"
+  },
+  {
+    "question": "项目是用哪个注解来实现会话隔离的？这个注解加在哪个参数上？",
+    "reference": "使用 @MemoryId 注解，标注在 AiChat 接口 chat / streamChat 方法的 sessionId 参数（Long 类型）上，不同 sessionId 对应相互隔离的记忆。"
+  },
+  {
+    "question": "对话记忆最多能留住几条消息？是靠哪个类做的？",
+    "reference": "最多保留 20 条消息，由 MessageWindowChatMemory 实现（builder 中设置 maxMessages(20)）。"
+  },
+  {
+    "question": "AiChatService 里那个 chatMemoryProvider，是一步步怎么搭出来的？",
+    "reference": "按 memoryId 动态构建：MessageWindowChatMemory.builder().id(memoryId).chatMemoryStore(redisChatMemoryStore).maxMessages(20).build()，即每个会话 ID 一份独立的、落在 Redis 上的 20 条消息窗口记忆。"
+  },
+  {
+    "question": "假如压根没有会话记忆，会冒出哪些问题？举几个例子。",
+    "reference": "AI 无法处理自然语言中的指代（\"它\"\"那个\"\"刚才说的\"），用户每次都要重复上下文，容易答非所问、反复澄清，还可能出现前后回答矛盾。"
+  },
+  {
+    "question": "有了会话记忆之后，用户体验上会好在什么地方？",
+    "reference": "支持自然语言中的指代（\"它\"\"那个\"\"刚才说的\"），允许追问、修正、渐进式提问（如\"再详细点\"\"换成英文\"）。"
+  },
+  {
+    "question": "在处理多步骤的复杂任务时，会话记忆是怎么把它们串起来的？",
+    "reference": "支持多步骤任务（如订机票：选日期 → 选航班 → 填信息）和工具调用上下文的衔接（先查数据库 → 再基于结果生成报告）。"
+  },
+  {
+    "question": "要让 AI 前后回答不打架，会话记忆能帮上什么忙？",
+    "reference": "防止前后矛盾（如第一轮说\"支持退款\"，第二轮说\"不支持\"），并让角色设定（如\"你是一个严谨的法律顾问\"）贯穿全程。"
+  },
+  {
+    "question": "为什么说对话系统缺了会话记忆就不行？请从四个方面完整讲讲。",
+    "reference": "会话记忆的必要性体现在四个方面：\n1. 提升用户体验：支持自然语言中的指代（\"它\"\"那个\"\"刚才说的\"），允许追问、修正、渐进式提问（如\"再详细点\"\"换成英文\"）；\n2. 减少用户输入成本：用户无需重复上下文（如每次都说\"关于我上一个问题…\"），避免因信息缺失导致 AI 答非所问、反复澄清；\n3. 增强 AI 表达一致性：防止前后矛盾（如第一轮说\"支持退款\"，第二轮说\"不支持\"），并适配角色设定（如\"你是一个严谨的法律顾问\"需贯穿全程）；\n4. 支撑复杂任务链：多步骤任务（订机票：选日期 → 选航班 → 填信息）与工具调用上下文（先查数据库 → 再基于结果生成报告）都依赖历史上下文的延续。"
+  },
+  {
+    "question": "RAG 这个技术到底在做什么？为什么说它不是只靠模型自己的记忆来答题？",
+    "reference": "RAG 是一种将信息检索与大模型生成结合的技术架构，让 LLM 在回答问题时不仅依赖参数记忆，还能实时检索外部知识库作为辅助。可以类比为\"人拥有了书\"——让大模型边查资料边回答问题，而不是只靠它的记忆。"
+  },
+  {
+    "question": "embedding 模型这东西，究竟是拿来干嘛的？",
+    "reference": "Embedding 模型是一种将文本映射为低维向量的模型，使得语义相近的内容在向量空间中距离更近，本质就是把文本转成向量。"
+  },
+  {
+    "question": "把向量维度设得越大，会带来什么影响？",
+    "reference": "维度越高向量长度越长，表达能力越强，但存储和计算成本也越高。"
+  },
+  {
+    "question": "按固定长度切块时，一般留多少比例的重叠？为什么非得留这个重叠不可？",
+    "reference": "通常设置 10%-20% 的重叠，即第二个分块的开头包含第一个分块的结尾，防止重要的上下文在切分点被切断。"
+  },
+  {
+    "question": "定长切分这种做法，优点和缺点分别是什么？",
+    "reference": "优点是计算极其简单、效率高；缺点是完全无视语义，可能把一个完整的句子或公式切成两半，导致检索时语义不连贯。"
+  },
+  {
+    "question": "所谓按语义边界切文档，具体是怎么个切法？",
+    "reference": "基础版按标点符号（句号、换行符）切分，确保每块是完整句子或段落；进阶版利用 Embedding 模型计算相邻句子的语义相似度，当相似度大幅下降（出现语义断层）时才触发切分。"
+  },
+  {
+    "question": "语义切分这种方式，有哪些短板？",
+    "reference": "计算开销大，且容易产生大小极不均匀的块。"
+  },
+  {
+    "question": "递归切分预先设了哪些分隔符？切的时候又是按什么先后顺序来的？",
+    "reference": "设定层级分隔符列表（如 [\"\\n\\n\", \"\\n\", \" \", \"\"]），先按段落（\\n\\n）分，段落太长再按句子（\\n）分，还太长按空格分，最后实在不行按字符硬切。"
+  },
+  {
+    "question": "和微调相比，RAG 在成本方面能省在哪？",
+    "reference": "无需更新模型权重，随时更新知识库即可同步生效，成本低、效率快。"
+  },
+  {
+    "question": "把文档切成小块常见有几种搞法（定长、按语义、还有递归那种），它们分别是什么原理、各自的优缺点是什么？帮我系统比一比。",
+    "reference": "三种切分策略对比如下：\n1. 基于固定大小：设定固定的字符数或 Token 数（如 512 个字符），每到该长度就强行切一刀，通常设置 10%-20% 的重叠防止上下文在切分点被切断。优点：计算极其简单、效率高；缺点：完全无视语义，可能把完整句子或公式切成两半，检索时语义不连贯。\n2. 基于语义边界：让切分点出现在语义完整的地方。基础版按标点符号（句号、换行符）切分，保证每块是完整句子或段落；进阶版用 Embedding 模型计算相邻句子的语义相似度，出现语义断层（相似度大幅下降）时才切分。优点：每个分块语义高度统一，检索更精准；缺点：计算开销大，块大小极不均匀。\n3. 基于递归分割：设定层级分隔符列表（如 [\"\\n\\n\", \"\\n\", \" \", \"\"]），先按段落分，超长再按句子分，再按空格分，最后按字符硬切，尽可能保持大块结构不被打碎。优点：在\"保持语义\"和\"控制长度\"之间达到平衡，结构稳定性极好；缺点：需要根据文档类型调整分隔符列表（如 Markdown 需加 # 标题作为分隔符）。"
+  },
+  {
+    "question": "应用刚一启动，本地那些知识文档是怎么被自动灌进去的？",
+    "reference": "RagDataLoader 实现 CommandLineRunner，应用启动后在 run() 中用 FileSystemDocumentLoader.loadDocuments(docsPath) 加载文档目录下的所有文档，非空则调用 embeddingStoreIngestor.ingest(documents) 灌入向量库，并输出加载日志。"
+  },
+  {
+    "question": "知识文档放在哪个路径，是从哪个配置项读出来的？",
+    "reference": "通过 @Value(\"${rag.docs-path}\") 注入，即 application-*.yml 中的 rag.docs-path 配置（生产环境为 /data/docs）。"
+  },
+  {
+    "question": "这项目实际是拿哪个切分器切文档的？它带的那两个数字参数分别是什么含义、又各设成了多少？",
+    "reference": "项目使用自定义的 MarkdownHeadingSplitter，构建为 MarkdownHeadingSplitter(3, 1500, subSplitter)。headingLevel=3 表示按 Markdown 三级标题 ### 切块；maxCharsPerSegment=1500 表示单块超过 1500 字符时才交给兜底细分器再切；subSplitter 为 DocumentSplitters.recursive(1000, 100)，即兜底时按块长 1000 字符、重叠 100 字符递归切分。"
+  },
+  {
+    "question": "文本片段在灌进向量库之前，代码对每一段都额外做了什么加工？这样处理有什么好处？",
+    "reference": "对每个切分后的文本片段做增强：把元数据中的 file_name 拼接在片段文本前（file_name + \"\\n\" + 原文本），让片段自带来源文件信息，提高检索的语义相关性。"
+  },
+  {
+    "question": "EmbeddingStoreIngestor 是做什么用的？项目里又是怎么把它组装出来的？",
+    "reference": "EmbeddingStoreIngestor 负责把文档切分、向量化并写入向量库。项目中通过 builder 依次设置 documentSplitter（MarkdownHeadingSplitter 标题切分器，兜底用 recursive(1000,100)）、textSegmentTransformer（在每个片段前拼接 file_name 元数据）、embeddingModel、embeddingStore 后构建。"
+  },
+  {
+    "question": "检索器单次最多能返回多少条？项目里把这个数定成了几？",
+    "reference": "项目现在是两阶段检索，要分两个数字看：粗召回阶段向量检索与 BM25 检索各取 maxResults=20（由 rag.recall-top-n 配置），RRF 融合后仍保留 20 条；精排阶段由 qwen3-rerank 打分后只取 Top-5（由 rag.rerank-top-k 配置）。所以最终喂给大模型的是 5 条，但检索器单次召回的候选是 20 条。"
+  },
+  {
+    "question": "相似度低于多少的片段会被直接舍弃？这个门槛项目里设的是多少，有什么用？",
+    "reference": "minScore 为 0.75，相似度得分低于 0.75 的片段会被过滤掉，不参与本次回答的增强，用于保证召回内容的相关性下限。"
+  },
+  {
+    "question": "从向量库里取相关片段用的那个检索器是哪个类实现的？它在构建时设了哪些参数？",
+    "reference": "向量检索这一路由 EmbeddingStoreContentRetriever 实现，通过 builder 传入 embeddingStore 与 embeddingModel，并设置 maxResults(20)、minScore(0.75) 构建。但它已不是对外出口，只是粗召回的一路，上层依次被 HybridContentRetriever（与 BM25 做 RRF 融合）和 RerankingContentRetriever（qwen3-rerank 精排）包装，最终出口是 rerankingContentRetriever。"
+  },
+  {
+    "question": "检索出来的那些内容，最后是怎么送进 AiChat 的？",
+    "reference": "在 AiChatService 中通过 AiServices.builder(AiChat.class).contentRetriever(contentRetriever) 装配，模型回答前会自动检索并注入相关片段。"
+  },
+  {
+    "question": "从文档入库到最终生成答复，千言这套 RAG 的数据是怎么一路流转的？请从头讲一遍。",
+    "reference": "分「入库」与「问答」两个阶段。入库阶段：应用启动 → RagDataLoader（@Order(1) 的 CommandLineRunner）读取 rag.docs-path 目录 → FileSystemDocumentLoader 加载全部 md 文档 → EmbeddingStoreIngestor 先用 MarkdownHeadingSplitter(3, 1500, recursive(1000,100)) 按三级标题切分，再由 textSegmentTransformer 在每个片段前拼接 file_name，然后用 text-embedding-v4 向量化（1024 维）写入 PgVectorEmbeddingStore（表 agent_embedding，dropTableFirst 保证启动时重建）→ 随后 PgBm25IndexInitializer（@Order(2)）为 text 列重建 BM25 索引。问答阶段：请求进入 /chat 或 /streamChat → rerankingContentRetriever 触发两阶段检索：向量路取 Top-20 且相似度 ≥ 0.75，BM25 路在同一张表取 Top-20，HybridContentRetriever 用 RRF（k=60）融合去重后保留 20 条，再由 qwen3-rerank 逐条打分、过 0.2 阈值取 Top-5 → 命中片段与系统提示词、Redis 会话记忆（窗口 20 条）组装进上下文 → 交给 qwen3-max 生成回答，流式则通过 Flux<String> 返回。"
+  },
+  {
+    "question": "PgVector 究竟是个什么玩意儿？",
+    "reference": "PgVector 是 PostgreSQL 的一个官方扩展，用于在数据库中存储、索引和检索向量数据。简单说：PgVector = PostgreSQL + 向量搜索能力。"
+  },
+  {
+    "question": "在部署这块，选 PgVector 最省心的地方是什么？",
+    "reference": "不需要额外部署一个新的向量数据库，只要给 PostgreSQL 安装 PgVector 扩展，就能使用向量运算、相似度搜索、向量索引等高级功能。"
+  },
+  {
+    "question": "在 RAG 场景下，PgVector 通常是怎么被用起来的？",
+    "reference": "将文本 chunk 嵌入为向量存入库中；用户提问 → 问题向量化 → 检索最相似的上下文 → 喂给 LLM 生成回答。"
+  },
+  {
+    "question": "撇开 RAG，PgVector 还能派上哪些用场？",
+    "reference": "智能搜索（以文搜图、语义查商品、相似问题推荐）、内容去重/聚类（计算向量距离自动合并相似内容）、个性化推荐（用户/物品向量找最近邻）。"
+  },
+  {
+    "question": "存向量的那张表，一条向量有多少维？为什么偏偏是这个数？",
+    "reference": "dimension 设置为 1024，与 Embedding 模型 text-embedding-v4 输出的向量维度保持一致。"
+  },
+  {
+    "question": "一旦把 dropTableFirst 打开（设为 true），每次启动会发生什么？",
+    "reference": "每次应用启动都会先删除旧的向量表再配合 createTable(true) 重新建表，随后由 RagDataLoader 从本地文档全量重灌，保证向量库与文档目录完全同步；副作用是重启会清空历史向量数据。"
+  },
+  {
+    "question": "搭 PgVectorEmbeddingStore 的时候，要给它哪些连接信息和建表配置？",
+    "reference": "连接参数包括 host、port、database、user、password；建表相关参数包括 table（表名）、dimension（向量维度 1024）、dropTableFirst、createTable。"
+  },
+  {
+    "question": "存向量那张表的表名是从哪个配置项取的？项目里默认命名为什么？",
+    "reference": "通过 ${pgvector.table} 配置项指定，项目中为 agent_embedding。"
+  },
+  {
+    "question": "项目是通过引哪个依赖，把 PgVector 接进来的？",
+    "reference": "通过 langchain4j-pgvector 依赖（版本 1.1.0-beta7）接入。"
+  },
+  {
+    "question": "请从“是什么、能做什么、项目如何接入”三个方面，把 PgVector 在千言里扮演的角色完整说一遍。",
+    "reference": "三个层面如下：\n1. 是什么：PgVector 是 PostgreSQL 的官方扩展，让传统关系型数据库直接具备向量的存储、索引与检索能力，即 PgVector = PostgreSQL + 向量搜索能力，无需额外部署独立向量数据库。\n2. 有什么用：在 RAG 系统中承担知识底座——文本 chunk 向量化后入库，用户提问向量化后检索最相似上下文喂给 LLM；此外还可用于智能搜索（以文搜图、语义查商品、相似问题推荐）、内容去重/聚类和个性化推荐。\n3. 项目如何接入：引入 langchain4j-pgvector（1.1.0-beta7）依赖；在 EmbeddingStoreConfig 中通过 @Value 读取 pgvector.host / port / database / user / password / table 配置，用 PgVectorEmbeddingStore.builder() 构建 EmbeddingStore Bean，设置表名 agent_embedding、维度 1024（对齐 text-embedding-v4）、dropTableFirst(true) 与 createTable(true) 实现启动时重建表；随后该 Store 被 EmbeddingStoreIngestor（写入）与 EmbeddingStoreContentRetriever（Top-5、minScore 0.75 检索）共同使用，构成完整的向量读写链路。"
+  },
+  {
+    "question": "工具调用（Tool Calling）指的到底是什么？",
+    "reference": "工具调用是让 AI 借助外部工具完成自身做不到的事——比如查时间、查天气、调 API、执行代码。AI 只负责\"提出调用请求\"，真正执行的是我们的应用，结果返回后再由 AI 生成答案。"
+  },
+  {
+    "question": "在 LangChain4j 里，要把一个普通方法变成模型能调用的工具，该怎么做？",
+    "reference": "在方法上添加 @Tool 注解，大模型会根据 @Tool 的描述和参数名来决定何时调用该工具。"
+  },
+  {
+    "question": "TimeTool 返回的是哪个时区的时间？返回格式是什么样子的？",
+    "reference": "返回 Asia/Shanghai 时区的当前时间，格式为 yyyy-MM-dd HH:mm:ss EEEE (中国标准时间)。"
+  },
+  {
+    "question": "项目在 AiServices 里注册了哪几个本地工具？",
+    "reference": "通过 .tools(new TimeTool(), ragTool, emailTool) 注册了三个本地工具：时间查询工具 TimeTool、知识入库工具 RagTool、邮件发送工具 EmailTool。"
+  },
+  {
+    "question": "大模型是凭什么弄明白每个工具参数含义的？",
+    "reference": "通过 @Tool 注解中的描述文字和方法参数名来理解，例如 RagTool 的描述明确说明\"将问题、答案和目标文件名作为参数\"。"
+  },
+  {
+    "question": "工具到头来是由谁来实际执行的？",
+    "reference": "真正执行工具的是我们的应用（后端代码），大模型只负责提出调用请求并在结果返回后生成最终答案。"
+  },
+  {
+    "question": "RagTool 上那段 @Tool 描述，写的是什么内容？",
+    "reference": "\"当用户想要保存问答对、知识点或者向知识库添加新信息时调用此工具。将问题、答案和目标文件名作为参数。\""
+  },
+  {
+    "question": "负责发邮件的那个方法，接收的三个参数分别代表什么？",
+    "reference": "targetEmail 是接收人的邮箱地址，subject 是邮件标题，content 是邮件正文内容。"
+  },
+  {
+    "question": "除了用 .tools()，AiServices 还有什么办法把外部工具接进来？",
+    "reference": "通过 .toolProvider(mcpToolProvider) 挂载 MCP 工具提供者，把 MCP 服务暴露的工具接入 Agent。"
+  },
+  {
+    "question": "一次完整的工具调用流程是怎么走的？请拿千言那三个本地工具举例讲讲。",
+    "reference": "工具调用流程：用户提问 → 大模型理解意图后判断需要借助工具 → 依据各工具 @Tool 描述与参数名选择工具，生成\"调用请求\"（工具名 + 参数值）→ 应用侧真正执行该方法 → 执行结果返回给大模型 → 大模型综合工具结果生成最终自然语言回答。项目三个本地工具的例子：\n1. TimeTool：用户问\"现在几点了\"，模型调用 getCurrentTimeInShanghai()，应用返回 Asia/Shanghai 时区、格式为 yyyy-MM-dd HH:mm:ss EEEE (中国标准时间) 的当前时间，模型据此作答；\n2. RagTool：用户说\"帮我把这个知识点存到知识库\"，模型按描述抽取 question、answer、fileName 三个参数调用 addKnowledgeToRag，应用把内容格式化后写入 md 文件并同步向量库，返回成功/失败信息；\n3. EmailTool：用户说\"给某某发一封邮件\"，模型抽取 targetEmail、subject、content 调用 sendEmail，应用通过 JavaMailSender 发送并返回\"邮件已成功发送给 xxx\"，模型再转述给用户。"
+  },
+  {
+    "question": "MCP 这个协议是用来做什么的？",
+    "reference": "MCP（Model Context Protocol，模型上下文协议）是一种开放标准协议，旨在标准化 AI 模型与外部工具、数据源和服务的交互方式，可类比为\"AI 的 USB 接口\"——就像 USB 统一了外设连接，MCP 让 AI 能安全、灵活地调用各类能力。"
+  },
+  {
+    "question": "MCP Service 具体指的是什么？",
+    "reference": "MCP Service 是实现 MCP 协议的具体后端服务，用于向 AI 暴露特定能力（如读写文件、查询数据库、调用 API 等），每个 Service 声明其支持的工具及参数规范，供 AI 按需调用，相当于\"可插拔的功能模块\"。"
+  },
+  {
+    "question": "那 MCP Client 又是什么？",
+    "reference": "MCP Client 是运行在 AI 或 Agent 侧的适配器，负责发现、连接 MCP Services，将模型的工具调用请求转换为标准 MCP 协议通信，再把结果返回给模型，相当于\"AI 与外部服务之间的翻译官和调度器\"。"
+  },
+  {
+    "question": "想找现成的 MCP 服务，可以去哪些网站上淘？",
+    "reference": "mcp.so 和 ModelScope。"
+  },
+  {
+    "question": "项目用的联网搜索 MCP 是哪家的？走的是什么传输方式？",
+    "reference": "接入了智谱 BigModel 的 web_search MCP 服务，使用 HttpMcpTransport 的 SSE 方式，sseUrl 中携带 Authorization=apiKey（apiKey 做了 trim 处理）。"
+  },
+  {
+    "question": "那个搜索 MCP 客户端的 bean，取的是什么名字？",
+    "reference": "BigModelSearchMcpClient。"
+  },
+  {
+    "question": "BigModel 的 API Key 是从哪个配置项注入的？",
+    "reference": "通过 @Value(\"${bigmodel.api-key}\") 注入，对应 application.yml 中的 bigmodel.api-key。"
+  },
+  {
+    "question": "讲义里演示的那个 Time MCP，用的哪种传输方式？又是靠什么命令拉起来的？",
+    "reference": "使用 StdioMcpTransport，启动命令为 uvx mcp-server-time --local-timezone=Asia/Shanghai（项目代码中该示例已注释保留）。"
+  },
+  {
+    "question": "McpToolProvider 是怎么构建的？又是如何把好几个 MCP Client 一并接进去的？",
+    "reference": "通过 McpToolProvider.builder().mcpClients(...) 构建，mcpClients 可以传入一个或多个 McpClient（如同时接入 timeClient 与 searchClient），再作为 toolProvider 装配进 AiServices。"
+  },
+  {
+    "question": "MCP 里协议、Service、Client 这三层各是干什么的？千言项目又是具体怎么用 MCP 把联网搜索接进来的？完整讲讲。",
+    "reference": "MCP 三层概念：\n1. MCP 协议：Model Context Protocol，开放标准协议，标准化 AI 模型与外部工具、数据源和服务的交互方式，类比\"AI 的 USB 接口\"，实现数据实时访问、复杂任务执行与系统无缝集成；\n2. MCP Service：实现该协议的具体后端服务，向 AI 暴露特定能力并声明工具与参数规范，是\"可插拔的功能模块\"，可从 mcp.so、ModelScope 等站点获取；\n3. MCP Client：运行在 Agent 侧的适配器，负责发现、连接 Service，把模型的工具调用请求翻译成标准 MCP 通信并回传结果，是\"翻译官和调度器\"。\n   千言项目的应用：在 McpToolConfig 中，先用 HttpMcpTransport.Builder 构建 SSE 传输，sseUrl 指向智谱 BigModel 的 web_search MCP 服务并携带 Authorization（来自配置项 bigmodel.api-key，注入后 trim）；再用 DefaultMcpClient.Builder 构建 key 为 BigModelSearchMcpClient 的客户端；最后通过 McpToolProvider.builder().mcpClients(searchClient) 生成 Bean，在 AiChatService 中以 .toolProvider(mcpToolProvider) 装配进 AiChat。这样当用户提出需要实时信息的问题时，模型即可通过 MCP 调用联网搜索能力。"
+  },
+  {
+    "question": "千言这门课的第七讲，是哪天录制的？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "千言 IM 的前端界面是拿什么框架写的？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "这个项目的单元测试覆盖率，做到了多少？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "千言项目到现在为止，一共写了多少行代码？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "对话模型 qwen3-max 的 temperature，在项目里被设成了几？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "qwen3-rerank 精排一次的平均耗时是多少毫秒？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "RagTool 保存知识时，调用的超时时间设成了几秒？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "千言 IM 打算在哪一年正式对外发布？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "项目用的是哪个日志框架？默认的日志级别又设成了什么？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "山羊算法这个团队是哪一年创立的？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "Grafana 面板上，总共配了多少个监控图表？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "你们内部那个 Maven 私服（Nexus）的地址是多少？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "项目切分器的块长和重叠具体是多少？这个重叠比例跟一般建议的取值对得上吗？",
+    "reference": "项目主切分器 MarkdownHeadingSplitter 是按 ### 三级标题切的，本身没有块长和重叠的概念，块的长度由每条问答的实际长度决定；只有单块超过 1500 字符时才用兜底的 DocumentSplitters.recursive(1000, 100)，此时块长 1000、重叠 100，重叠占块长约 10%。一般建议固定大小切分的重叠取块长的 10%-20%，所以兜底细分器的 100/1000 正好落在常规建议区间内。"
+  },
+  {
+    "question": "检索那个 0.75 的相似度门槛是怎么定的？换个别的 Embedding 模型能不能照抄这个数？",
+    "reference": "项目把 minScore 设为 0.75，低于该分数的片段会被过滤，不参与本次回答增强。但阈值取决于所用模型的分数分布，不能直接照搬：各模型的向量空间结构与训练目标不同，分数绝对值缺乏统一含义，只有同一模型内部做相对比较才有意义。合理做法是在评测集上观察相关与不相关样本的分数分布，选择两者重叠最小处，或扫描一组候选阈值、同时观察拒答准确率与误拒率的变化曲线取平衡点。"
+  },
+  {
+    "question": "项目每次启动都把向量表删了重建，这种做法本身有没有问题？",
+    "reference": "项目在 EmbeddingStoreConfig 中设置 dropTableFirst(true)，配合 createTable(true) 每次启动先删旧表再重建，随后由 RagDataLoader 从本地文档全量重灌，好处是向量库与文档目录完全同步，副作用是重启会清空历史向量数据。但这并不是好做法：语料规模稍大时重建会显著拖慢启动，并且每次都要重新支付向量化的调用成本，更好的方式是按内容摘要值做增量更新，只重算发生变化的块。"
+  },
+  {
+    "question": "项目把来源文件名拼到每个文本块前面再向量化，这个增强手法有没有副作用？",
+    "reference": "项目的 textSegmentTransformer 把元数据中的 file_name 拼在片段文本前（file_name + \"\\n\" + 原文本），让片段自带来源信息以提高检索相关性。但这种前缀增强有风险：对所有块完全相同的前缀不提供任何区分度，却会让全部向量朝同一方向偏移，同时占用短块本就有限的语义容量。按通用建议，元数据更适合承载来源文件、章节、更新时间等溯源信息，用于过滤和引用标注，一般不应混入参与向量化的正文。"
+  },
+  {
+    "question": "护轨里就配了两个字的敏感词，这样做拦得住吗？会不会有别的毛病？",
+    "reference": "SafeInputGuardrail 用 Set.of 只定义了 \"死\" 和 \"杀\" 两个单字敏感词，命中即返回 fatal(\"提问不能包含敏感词！！！！！\") 终止本次请求。这种单字符匹配问题明显：中文里单字组合能力极强，用单字做包含匹配会大量误伤正常表达，例如技术讨论中的常见术语，应改用词组匹配并配合白名单。敏感词过滤本身也容易误伤，因为同一个字词在不同语境下含义差别巨大，基于字面的匹配无法感知语境，单纯的关键词表在中文场景下误判率很高。"
+  },
+  {
+    "question": "会话记忆在 Redis 里存多久？为什么这类数据一定要设过期？",
+    "reference": "项目在 spring.data.redis 下把 ttl 配为 3600 秒，即会话记忆保留 1 小时。会话数据确实应该设过期时间：会话天然有生命周期，不设过期会导致存储无限增长，通常按业务的合理会话时长设定，并在每次交互时续期。"
+  },
+  {
+    "question": "记忆为什么不能就放在应用进程里？项目最后是怎么落地的？",
+    "reference": "会话状态存在本地内存的隐患是：多实例部署时用户请求可能落到不同实例上导致上下文丢失，且实例重启后历史全部消失，无法水平扩展；项目侧也提到纯内存记忆在会话多时容易 OOM。项目的做法是在 chatMemoryProvider 中把 RedisChatMemoryStore 作为存储后端传入 MessageWindowChatMemory.builder().chatMemoryStore(redisChatMemoryStore)，使 20 条窗口记忆落在 Redis 而非 JVM 内存，从而重启不丢、多实例可共享。"
+  },
+  {
+    "question": "向量化失败的时候 RagTool 为什么是返回一句话而不是直接抛异常？",
+    "reference": "RagTool 在文件写入成功但向量化失败时返回\"文件写入成功，但向量数据库更新失败：\"加异常信息（/insert 接口对应返回\"插入部分成功：文件已写入，但向量库更新失败\"）。这样设计的原因是：对智能体来说校验或执行失败是可恢复的反馈，把错误信息作为工具返回值交还给模型，它可以据此修正后重试；直接抛异常则会中断整轮对话。工具返回值也应是对模型友好的自然语言描述，明确说明执行结果、失败原因以及下一步该做什么。"
+  },
+  {
+    "question": "让模型自己往知识库里写东西，风险在哪？项目目前的校验够不够？",
+    "reference": "自然语言写入的风险是：模型写入的内容可能破坏切分格式、与已有条目重复或冲突、混入本应属于会话临时偏好的内容，因此写入前需要查重、格式校验和必要时的人工确认；另外用户的临时偏好不应写进知识库。项目目前只做了轻量兜底：fileName 为空默认用 InfiniteChat.md、缺 .md 后缀自动补齐；appendToFile 在文件不存在时先建父目录和文件、追加前加 \"\\n\\n\" 保证问答格式独立、方法加 synchronized 防并发写冲突、IOException 时记录日志并返回 false。也就是说格式独立与并发安全有了，查重与内容级校验尚缺。"
+  },
+  {
+    "question": "要在现有检索上再加一路关键词检索，两路结果合并时为什么倾向用名次融合而不是分数加权？",
+    "reference": "项目已经加了这一路：PgBm25ContentRetriever 基于 ParadeDB 的 pg_search 做 BM25 检索，与向量检索共用同一张表。两路由 HybridContentRetriever 用 RRF 融合，公式为 score(d) = Σ 1/(k + rank_i(d))，项目里 k 取经验值 60。选 RRF 而不是分数加权，是因为向量检索的余弦相似度（0~1）和 BM25 得分（无上界、随词频浮动）量纲完全不同，硬凑在一起加权相加没有可比性，还得先归一化再调权重，既麻烦又脆弱；RRF 只看名次不碰原始分，天然绕开量纲问题，无需调参也无需归一化，还能让两路都靠前的结果自动浮到顶端。"
+  },
+  {
+    "question": "重排序该插在项目现有链路的哪一步？为什么不能拿交叉编码器直接把整个向量表打一遍分？",
+    "reference": "项目已经实现：RerankingContentRetriever 作为装饰器包在 hybridContentRetriever 外面，位置在粗召回之后、生成之前——混合检索先出 20 条候选，再由 qwen3-rerank 逐条打分，过 rerank-min-score=0.2 阈值后取 Top-5 送入生成。交叉编码器不能用于全库打分，因为分数是 Query 与该候选文档这一对共同算出来的、不是文档自身属性，换个 Query 之前算的全部作废，无法预先建库，开销随库规模线性增长。项目也做了兜底：阈值把所有候选都砍光时会回退返回分数最高的 topK 条并打 warn 日志，精排抛异常时降级为粗召回的前 topK 条。"
+  },
+  {
+    "question": "做检索改动的对照实验时，为什么要把记忆和工具都关掉？只叠着测和分开测有什么差别？",
+    "reference": "评测链路要刻意绕开会话记忆与工具调用，因为评测目的是隔离变量，只反映检索与生成本身的变化；若保留记忆和工具，指标波动会混入这些因素的影响，无法归因到检索优化上。而项目正常运行时这两者都在：@MemoryId 按 sessionId 隔离的 Redis 窗口记忆，以及 .tools(new TimeTool(), ragTool, emailTool) 注册的三个本地工具加 MCP。至于叠着测还是分开测：链式消融每一步在上一步基础上叠加，只能看到累积效果；正交消融独立开关每个组件，才能隔离出单个组件的净贡献，代价是实验组合数量更多。"
+  },
+  {
+    "question": "向量维度定在 1024 是跟着什么定的？维度往上加会付出什么代价？",
+    "reference": "项目 PgVector 向量表的 dimension 设为 1024，与 Embedding 模型 text-embedding-v4 输出的维度保持一致。维度越高向量长度越长、表达能力越强，但存储和计算成本同步上升、检索延迟增加，且超过一定维度后收益递减，需要按语料规模与精度要求权衡。"
+  },
+  {
+    "question": "系统提示词那条不许编造的规则，跟检索侧一条都没召回到的情况怎么配合？",
+    "reference": "系统提示词的\"知识边界\"规则要求仅根据已获取的知识回答问题，不得编造或推测信息，知识库中没有的内容应如实告知用户。检索侧的配合方式是：检索不到内容时应当返回空结果并让生成环节如实说明知识库中没有相关内容，而不是硬塞低相关度片段——给模型喂无关上下文反而会诱发编造；并且要把\"无检索结果\"这一事实明确传递给生成环节并要求如实告知，不能留空让模型自由发挥。"
+  },
+  {
+    "question": "跨域那块既开了凭证又想放开来源，标准上这两个是冲突的，项目怎么处理的？",
+    "reference": "携带凭证意味着跨域请求会带上 Cookie，此时若允许任意来源访问，任何网站都能以用户身份调用接口，因此规范要求必须显式列出具体来源。项目的 CorsConfig 实现 WebMvcConfigurer，addMapping(\"/**\") 对所有路径生效，allowCredentials(true) 允许携带凭证，用 allowedOriginPatterns(\"*\") 匹配任意来源以避免与 allowedOrigins(\"*\") 的凭证模式冲突，并放行 GET/POST/PUT/DELETE/OPTIONS 方法。"
+  },
+  {
+    "question": "容器里为什么要专门建个 1001 的用户来跑？固定这个号又是图什么？",
+    "reference": "项目 Dockerfile 创建固定 UID 1001 的 appuser 以非 root 身份运行应用来提升安全性；固定 UID 便于宿主机对挂载卷（如 /data/docs）按相同 UID 授权，配合 chown 保证容器内外文件权限对齐。通用理由是：容器内的 root 在某些配置下可能突破隔离影响宿主机，使用普通用户运行可以缩小攻击面，同时避免挂载卷产生的文件属主混乱。"
+  },
+  {
+    "question": "流式那边的监控上下文是怎么收尾的？为什么非得在结束信号里清？不清会怎样？",
+    "reference": "流式接口用 Flux.defer 包裹，保证在订阅发生时才设置 ThreadLocal 上下文，使上下文绑定到实际执行的线程；再通过 .doFinally(signal -> MonitorContextHolder.clearContext()) 在流以完成、错误或取消任意信号结束时清理。必须放在 finally 语义里的原因是：异常或提前返回同样会离开当前请求，只在正常路径清理会导致上下文残留，被线程池里的下一个请求读到而串号。不清理还会造成内存泄漏：ThreadLocalMap 的 key 是弱引用而 value 是强引用，线程池中线程长期存活时，key 被回收后 value 仍无法释放，形成泄漏，因此使用完必须显式 remove。响应式链路中上下文尤其不能在业务代码里随手清理，应统一在流的终止信号处清。"
+  },
+  {
+    "question": "四个自定义指标在面板上该怎么看？计数器直接画原始值行不行，耗时看平均值够不够？",
+    "reference": "项目自定义了 ai_model_requests_total（请求数）、ai_model_errors_total（错误数）、ai_model_tokens_total（Token 用量）、ai_model_response_duration_seconds（响应耗时）四个指标。计数器不能直接画原始值：它是只增不减的累积值，直接绘图只能看到一条上升曲线，必须用速率函数换算成单位时间的增量才能反映实时变化。耗时看平均值不够：平均值会被大量快速请求稀释，即使存在少量极慢请求也难以体现，而这些长尾请求往往正是用户投诉的来源；应改看分位数延迟，即有多少比例的请求快于某个耗时，例如九十九分位反映最慢那百分之一的体验。"
+  },
+  {
+    "question": "指标里带上了用户和会话这两个维度，这么打标签有没有隐患？",
+    "reference": "项目的 MonitorContext 记录 userId 与 sessionId 两个字段（builder 方式构建），并经 MonitorContextHolder 传给监听器作为指标标签维度。隐患是指标基数爆炸：把高基数字段作为标签会产生海量时间序列，撑爆存储与查询性能，因此用户标识这类字段通常不适合直接作为指标标签。常见的标签维度包括模型名称、调用来源、用户或租户标识以及成功失败状态，但标签取值过多会导致时间序列爆炸，需要控制基数——项目把会话级的 sessionId 也打成标签，基数风险比只打模型名和状态要高得多。"
+  },
+  {
+    "question": "记忆窗口满了以后早的消息就没了，除了直接丢还有别的办法吗？",
+    "reference": "项目的会话记忆最多保留 20 条消息，由 MessageWindowChatMemory 实现（builder 中 maxMessages(20)），超出窗口的最早消息被丢弃。保留轮数本身需要在上下文连贯性与 token 成本之间权衡，常见做法就是设一个固定消息条数窗口，超出后丢弃最早消息或做摘要压缩。摘要压缩指历史超出窗口时用模型把较早的对话浓缩成一段摘要替代原文，既保留关键信息又显著减少 token 占用，代价是细节丢失。"
+  },
+  {
+    "question": "生产环境的文档路径是写死在配置里的，这种做法在什么情况下会出问题？",
+    "reference": "项目通过 spring.profiles.active: prod 激活生产配置，prod 中 rag.docs-path 为 /data/docs，路径本身由 @Value(\"${rag.docs-path}\") 注入而非硬编码在代码里。风险在于开发机上的路径在服务器文件系统中并不存在，程序启动时可能直接失败，更隐蔽的情况是运行时写入失败而功能表面正常；硬编码绝对路径在其他机器和容器环境中同样不存在，会导致无法启动或功能静默失效，应改用相对路径或环境变量并提供合理默认值。容器化部署时配置优先通过环境变量注入，其次是挂载配置文件，把配置烤进镜像会让同一镜像无法跨环境复用。"
+  },
+  {
+    "question": "邮箱那个密码位填的是什么？这种东西能不能直接写进仓库？",
+    "reference": "spring.mail.password 应填 SMTP 授权码而不是邮箱登录密码；发件人地址则通过 @Value(\"${spring.mail.username}\") 从配置文件读取，避免在代码里硬编码发件账号。这类凭证不能提交到代码仓库：仓库通常多人可见且历史不可轻易抹除，一次提交等于长期泄露，即使后续删除也仍留在历史记录中，应改用环境变量、配置中心或密钥管理服务注入，并在打包分发前清理凭证。"
+  },
+  {
+    "question": "指标收集器用并发容器缓存 Counter 那段，为什么必须用 computeIfAbsent 而不是先查再放？",
+    "reference": "项目中同一组 userId/sessionId/modelName（及 token_type）标签的指标对象只需注册一次，用 ConcurrentHashMap 配合 computeIfAbsent 在并发场景下安全地\"取或建\"，避免重复向 MeterRegistry 注册同名指标并减少对象创建开销。先 get 再 put 是两步独立操作，多个线程可能同时判空并各自创建、重复注册；computeIfAbsent 把判断与写入合成一次调用，同一个 key 上的计算只执行一次。ConcurrentHashMap 本身的并发安全靠 CAS 加 synchronized 锁住单个桶的头节点实现，只在发生哈希冲突时才加锁，锁粒度细、并发读完全无锁，因此这种\"取或建\"在高并发下开销很小。"
+  },
+  {
+    "question": "RagTool 和 EmailTool 这两个工具，写给模型看的触发描述分别是怎么写的？",
+    "reference": "RagTool 的 @Tool 描述是\"当用户想要保存问答对、知识点或者向知识库添加新信息时调用此工具。将问题、答案和目标文件名作为参数。\"；EmailTool 的 @Tool 描述是\"向特定用户发送电子邮件。\""
+  },
+  {
+    "question": "项目里有好几个依赖都是 1.1.0-beta7，分别是哪些、各自解决什么？",
+    "reference": "这个前提已经不成立了：项目升级后不再有 1.1.0-beta7 这个版本号，langchain4j 核心统一为 1.17.2、社区库统一为 1.17.2-beta27，且都由 BOM 管理、依赖里不再手写 version。对应的三个社区依赖仍在：langchain4j-pgvector 用于接入 PgVector 向量库，langchain4j-community-redis-spring-boot-starter 用于把会话记忆落到 Redis，langchain4j-reactor 为 AiServices 提供 Flux 返回类型的响应式适配以支撑流式输出。"
+  },
+  {
+    "question": "项目里有两处都在设上海时区，分别是哪两处、各是为了什么？",
+    "reference": "一处是 TimeTool：返回 Asia/Shanghai 时区的当前时间，格式为 yyyy-MM-dd HH:mm:ss EEEE (中国标准时间)，供模型回答时间类问题。另一处是容器层：Dockerfile 通过 ENV TZ=Asia/Shanghai 并把 /usr/share/zoneinfo/Asia/Shanghai 链接到 /etc/localtime，保证日志与 TimeTool 输出都是中国时区。前者决定工具返回值，后者决定容器进程的默认时区，两者一致才不会出现日志与工具时间对不上的情况。"
+  },
+  {
+    "question": "同步和流式两个对话接口，路径、请求方式和返回类型各是什么？底层推送一般走什么协议，跟 WebSocket 差在哪？",
+    "reference": "同步接口是 POST /chat（完整路径 /api/chat），接收 ChatRequest 请求体，返回 String 完整回答；流式接口是 POST /streamChat，同样接收 ChatRequest，返回 Flux<String> 流式响应。服务端单向推送通常用 SSE（Server-Sent Events），它基于 HTTP 长连接单向推送文本事件，实现简单且天然支持断线重连。与 WebSocket 的区别是：SSE 基于普通 HTTP 只支持服务端到客户端的单向文本推送，实现与调试简单；WebSocket 是全双工二进制协议，适合双向实时交互但需要额外的协议升级与心跳维护，逐 token 下发这类场景 SSE 已足够。"
+  },
+  {
+    "question": "项目那个联网搜索走的是哪种 MCP 传输？除了它还有哪几种，跑在本地进程上的那种怎么拉起来？",
+    "reference": "项目接入智谱 BigModel 的 web_search MCP 服务，使用 HttpMcpTransport 的 SSE 方式，sseUrl 中携带 Authorization=apiKey（apiKey 做了 trim 处理）。MCP 常见传输方式主要有两类：标准输入输出方式，把服务作为本地子进程启动并通过 stdio 通信；以及基于 HTTP 的方式，用 SSE 或流式 HTTP 连接远程服务端点。本地进程方式由客户端按配置的命令与参数拉起子进程，课件示例用 StdioMcpTransport，启动命令为 uvx mcp-server-time --local-timezone=Asia/Shanghai（项目代码中该示例已注释保留），进程生命周期由客户端管理，随客户端退出而终止。"
+  },
+  {
+    "question": "接别人家的 MCP 服务要担心什么？以后再多挂几个又该注意什么？",
+    "reference": "使用第三方 MCP 服务的风险是：第三方服务可能读取传入的数据、返回诱导性内容影响模型判断，也可能不稳定或停止维护，接入前需要评估其权限范围与可信度。接入多个 MCP 服务时要注意不同服务提供的工具是否重名、总工具数量是否过多影响模型选择，以及某个服务不可用时是否会阻塞整体初始化。项目侧的接法是 McpToolProvider.builder().mcpClients(...) 构建，mcpClients 可传入一个或多个 McpClient，再作为 toolProvider 装配进 AiServices，扩展时正是从这里加。"
+  },
+  {
+    "question": "项目的护轨拦在哪一层？按通用做法这个位置对不对，出口方向是不是还缺一道？",
+    "reference": "项目在 AiChat 接口上标注 @InputGuardrails({SafeInputGuardrail.class})，接口内所有对话方法的用户输入都会先经过护轨校验，即拦在请求进入模型之前，与原则一致：输入护轨应在请求进入模型之前拦截，越早拦截消耗越小，同时要注意护轨本身不应成为性能瓶颈，复杂判定可以分级处理。出口方向确实还缺一道：输入护轨在请求进入模型前对用户内容做合规与安全校验，输出护轨在模型返回后对生成内容再做一次检查，两者共同构成安全防线；输出侧重点检查是否泄露了系统提示词与内部配置、是否输出了敏感个人信息、是否包含违规内容，以及是否偏离了既定的角色设定。项目目前只实现了输入侧的 SafeInputGuardrail。"
+  },
+  {
+    "question": "通过 /insert 写进去的知识，容器重启之后还能被检索到吗？把这条链路串起来讲讲。",
+    "reference": "能，但依赖三个环节配合。写入侧：/insert 先按 \"### Q：/A：\" 模板格式化内容，写入物理 md 文件（appendToFile），再构建带 file_name 元数据的 Document，交给 embeddingStoreIngestor.ingest 存入向量库，任一环节失败返回对应提示。之所以先写文件再入向量库，是因为向量表启动时 dropTableFirst 会重建、重启后向量数据清空，md 文件才是持久化知识源，文件负责持久、向量库负责实时。重启恢复：容器入口脚本先执行 cp -rn /init-docs/* /data/docs/，把镜像内的初始文档恢复到挂载目录，-n 保证不覆盖同名文件，从而不会冲掉运行期新增的内容；随后 RagDataLoader 作为 CommandLineRunner 在 run() 中用 FileSystemDocumentLoader.loadDocuments(docsPath) 加载该目录全部文档并 ingest 重灌向量库。所以只要挂载卷还在，/insert 写入的知识重启后会被重新向量化并可检索。"
+  },
+  {
+    "question": "系统提示词对输出格式和语气各有什么硬性要求？提示词写得越细越好吗？",
+    "reference": "格式要求是输出必须为纯文本格式，换行严格使用 \\n 表示；语气约束是所有回复结尾必须带一个感叹号。但提示词并非越详细越好：过长的提示词会稀释关键约束的权重、增加每轮成本，且相互冲突的规则会让模型行为变得不可预测，应当精简并排除歧义。"
+  },
+  {
+    "question": "Skill 那个按需加载的机制叫什么？一个 Skill 包里都放些什么，跟提示词的本质区别在哪？",
+    "reference": "叫渐进式披露：Skill 的元数据（名称、描述）常驻上下文供模型判断是否需要，正文与资源按需加载，好处是大幅节省 Token，让 Agent 可以挂载大量 Skill 而不撑爆上下文。一个 Skill 包通常包含必需的 SKILL.md（元数据加指令文档），以及可选的 scripts/（脚本）、references/（参考文档）、assets/（资源文件）。与提示词的本质区别是：提示词每轮都随上下文发送，技能只在命中时才加载；提示词多用于约束风格，技能更适合封装特定场景下的操作规程，且技能可以独立版本化演进。"
+  },
+  {
+    "question": "少样本提示到底给几个例子合适？我看到的说法好像不太一样。",
+    "reference": "知识库里这两处说法不一致，需要一并指出：千言课件的提示词工程部分建议给模型 1-3 个示例，让它模仿示例的格式与风格输出；而通用提示词技巧部分则说少样本提示在指令中给出若干输入输出示例、让模型从示例中归纳出任务的格式与判断标准，通常给三到五个效果较好。两者区间只在 3 上重合，实际取值应结合任务复杂度与上下文预算，并在评测集上验证，不能只引用其中一处。"
+  },
+  {
+    "question": "要判断检索到底是不是瓶颈，该怎么看？对应到评测指标上分别是哪几个？",
+    "reference": "判断方法是把标准答案所需的关键信息与实际召回内容逐条比对：若关键信息根本没被召回，问题在检索侧；若召回了却没被采用，问题在生成侧。对应指标上，上下文召回率衡量标准答案所需关键信息是否都被检索出来，反映检索环节有没有遗漏；上下文精确率衡量检索片段中相关内容的比例并考虑相关片段是否排在靠前位置，反映排序质量；忠实度衡量生成答案中的每个论断是否都能在给定上下文中找到依据，用来检测模型有没有编造上下文之外的内容。也就是说召回率掉了看检索，忠实度掉了看生成。"
+  },
+  {
+    "question": "评测集里为什么要专门放答不出来的题？配套还得看哪个指标，样本太少又会怎样？",
+    "reference": "负样本是知识库中确实没有答案的问题，用来检验系统会不会强行编造、衡量拒答能力，通常占测试集总量的一成左右比较合适。配套必须同时看误拒率：即知识库中明明有答案、系统却给出拒答话术的比例，它与拒答准确率是一对需要同时观察的指标，只看其一容易被单边优化误导。样本量太小则指标置信区间宽，小幅度差异无法与随机波动区分，容易把噪声当成改进，样本量越小能可靠检出的最小差异就越大；比较两版系统时应在同一批样本上做配对显著性检验，只统计结果发生变化的样本，二分类指标常用 McNemar 检验。"
+  },
+  {
+    "question": "怎么看出测试集跟知识库配不配？如果某个指标已经快满了还怎么比出差异？",
+    "reference": "评估覆盖度的做法是统计测试集中每个问题命中的块分布，看有多少块从未被任何问题指向，以及是否存在大量问题集中命中同一批块，据此判断语料与问题集是否匹配。至于指标快满的情况，那叫指标饱和：某项指标已经逼近理论上限，此后无论系统如何改进数值都几乎不动，该指标便失去了区分能力，需要通过提高任务难度让它重新变得敏感；同时样本量小则指标的置信区间宽，饱和区间内的小幅差异更无法与随机波动区分。"
+  },
+  {
+    "question": "按标题切分好在哪、又有哪些边界要处理？为什么还要把父级标题带上？一个块装多少内容合适？",
+    "reference": "标题是作者显式给出的语义边界，按它切分能让检索单元与知识单元对齐；固定长度切分则可能把一个完整论述从中间截断，导致上下两半都不完整。需要处理的边界包括：代码块内以井号开头的行被误判为标题，单个小节过长时如何二次切分，以及是否保留父级标题路径以维持层级语境。保留父级标题路径的原因是脱离上下文的块可能丢失关键限定，例如同一个「配置方式」小节在不同父章节下含义完全不同，把标题路径拼到块首能补回这层语境。至于块的体量，理想情况下一个块恰好承载一个完整且自足的知识点，塞进多个主题会让无关内容成为噪声，拆得过碎又会让一个知识点永远只能被召回一半。"
+  },
+  {
+    "question": "会话记忆在 Redis 里存多久？项目给 Redis 配的内存淘汰策略又是哪一个？",
+    "reference": "TTL 部分可答：项目在 spring.data.redis 下把 ttl 配为 3600 秒，即会话记忆保留 1 小时。内存淘汰策略部分资料未覆盖：知识库只介绍了 Redis 淘汰策略有哪些（不淘汰直接报错、在设置了过期时间的键中淘汰最久未使用或最少使用的、在全部键中淘汰、随机淘汰等），并未给出千言项目实际配置的策略取值。"
+  },
+  {
+    "question": "向量表的维度设成了多少？这张表上建的是哪种向量索引？",
+    "reference": "维度部分可答：PgVector 向量表的 dimension 设为 1024，与 text-embedding-v4 输出维度一致。向量索引部分资料未覆盖：知识库说明了 PgBm25IndexInitializer 会在 text 列上建 BM25 索引（USING bm25，索引名为表名加 _bm25_idx），但这是给关键词检索用的全文索引，不是向量索引；建表参数中只出现 table、dimension、dropTableFirst、createTable，未说明在 embedding 列上建了 HNSW 还是 IVFFlat。"
+  },
+  {
+    "question": "项目现在有没有在监控检索环节？该监控哪些指标？",
+    "reference": "项目自定义的四个指标是 ai_model_requests_total（请求数）、ai_model_errors_total（错误数）、ai_model_tokens_total（Token 用量）、ai_model_response_duration_seconds（响应耗时），全部围绕模型调用，仍然没有把检索侧指标接入 Prometheus。不过检索链路已有日志埋点：BM25 检索、混合检索、重排都会打印命中条数（如「混合检索 - 向量 N 条 / BM25 N 条 / 融合去重后取 top-K」「重排 - 粗召回 N 条 / 精排后取 top-K」）。建议补充的检索指标包括检索耗时、召回条数分布、命中零结果的比例、重排序后被阈值过滤的比例，以及回答中触发拒答的频次。"
+  },
+  {
+    "question": "千言项目为什么把段落切分换成了按标题切分？",
+    "reference": "因为千言知识库是 Q&A 问答库，每条知识天然就是一个 ### 三级标题。标题切分能保证一块恰好是一问一答，长答案不会被拦腰截断，短问答也不会两条挤进同一块，每块只讲一件事，语义干净聚焦，embedding 更准，且块开头就是问题、与用户提问更容易匹配。固定切分只按字数切、不看内容，容易把一条答案切碎或把不相关内容混进同一块。"
+  },
+  {
+    "question": "MarkdownHeadingSplitter 是怎么判断一行是不是标题的？",
+    "reference": "isHeading 方法把行首空格去掉后，判断该行是否以 headingPrefix（headingLevel 个井号）开头、且不以再多一个井号开头，从而只匹配恰好这一级的标题、排除四级及更深标题。"
+  },
+  {
+    "question": "单个小节超过 1500 字符时，MarkdownHeadingSplitter 会怎么处理？",
+    "reference": "会交给构造时传入的 subSplitter 兜底细分，项目里是 DocumentSplitters.recursive(1000, 100)。细分时用 Document.from(content, document.metadata()) 复用原文档元数据，让细分出来的片段也带着 file_name 来源信息。"
+  },
+  {
+    "question": "千言项目里 BM25 检索是哪个类实现的？走的什么 SQL？",
+    "reference": "由 PgBm25ContentRetriever 实现。核心 SQL 是 SELECT text, paradedb.score(embedding_id) AS score FROM 表名 WHERE embedding_id @@@ paradedb.match('text', ?) ORDER BY score DESC LIMIT ?，用占位符传入问题以规避注入与特殊字符解析问题。它直接查 langchain4j 写入的向量表 text 列，与向量检索共用同一张表同一批数据，无需额外同步；检索异常时降级返回空列表，让向量检索兜底。"
+  },
+  {
+    "question": "千言项目的 BM25 索引是什么时候建的？为什么每次启动都要重建？",
+    "reference": "由 PgBm25IndexInitializer 建立，它是 @Order(2) 的 CommandLineRunner，排在 RagDataLoader（@Order(1)）灌库之后。先执行 CREATE EXTENSION IF NOT EXISTS pg_search，再先删后建保证幂等，索引名为表名加 _bm25_idx。必须每次启动重建，是因为 PgVectorEmbeddingStore 配了 dropTableFirst(true)，每次启动表都会被删掉重建，索引自然也没了。"
+  },
+  {
+    "question": "千言项目建 BM25 索引的那条语句是怎么写的？为什么要指定中文分词器？",
+    "reference": "语句为 CREATE INDEX 索引名 ON 表名 USING bm25 (embedding_id, (text::pdb.chinese_compatible)) WITH (key_field='embedding_id')。key_field 必须唯一且为第一列，所以用建表主键 embedding_id（UUID）；(text::pdb.chinese_compatible) 指定中文分字器，对中英混排更友好。"
+  },
+  {
+    "question": "HybridContentRetriever 融合两路结果时，用什么做去重键？RRF 的 k 取多少？",
+    "reference": "用片段的文本内容（content.textSegment().text()）作为去重键，因为 text 里已含灌库时前置的 file_name，与向量检索返回文本一致，能正确去重。RRF 的平滑常数 k 取经验值 60，某文档在某一路名次为 rank 时该路贡献 1/(60 + rank)，两路都命中则分数累加。"
+  },
+  {
+    "question": "什么是 ParadeDB？千言项目为什么要换成这个镜像？",
+    "reference": "ParadeDB 是「Postgres + pgvector + pg_search」三合一的镜像。换镜像后原来的向量检索完全不受影响，只是额外多了 BM25 能力，使向量路与 BM25 路能共用同一个库、同一张表。项目中 ParadeDB 容器映射端口为 54329，application-dev.yml 里 pgvector.port 也相应改成 54329。"
+  },
+  {
+    "question": "千言项目为什么要单独给 BM25 配一个 DataSource？",
+    "reference": "因为 BM25 要走原生 SQL，需要 JdbcTemplate。项目引入 spring-boot-starter-jdbc 并新增 DataSourceConfig，复用 pgvector.* 的连接参数构建 HikariDataSource（最大连接池 5、池名 bm25-pool）与 JdbcTemplate。这套连接与 langchain4j 内部连接相互独立，只是指向同一个库同一张表；显式声明 DataSource 后，Spring Boot 也不会再因没配 spring.datasource.url 而报 Failed to configure a DataSource。"
+  },
+  {
+    "question": "千言项目的 rerank 用的是哪个模型？通过哪个类接入的？",
+    "reference": "使用百炼平台的 qwen3-rerank，通过 langchain4j-community 的 QwenScoringModel 接入，在 RerankModelConfig 中构建为 ScoringModel Bean，模型名由 rerank.model-name 配置项注入（默认 qwen3-rerank），API Key 复用 langchain4j.community.dashscope.chat-model.api-key。"
+  },
+  {
+    "question": "为什么 rerank 选 qwen3-rerank 而不是 qwen3-vl-rerank 或 gte-rerank？",
+    "reference": "qwen3-rerank 支持 100 多个语种、单次最多 500 篇文档，适用于文本语义检索和 RAG 场景；qwen3-vl-rerank 更适合图片检索，与本项目的纯文本知识库不匹配。另外 gte-rerank 将于 2026-05-30 下线，官方推荐迁移到 qwen3-rerank。"
+  },
+  {
+    "question": "RerankingContentRetriever 在什么情况下会跳过精排？出错了会怎样？",
+    "reference": "粗召回结果为空时直接返回空列表；只有一条候选时无需排序，直接返回以省一次模型调用。如果阈值把所有候选都砍光，会兜底返回分数最高的 topK 条并打 warn 日志，避免答案侧无资料可用；精排过程抛异常时降级为粗召回的前 topK 条，不拖垮整条链路。"
+  },
+  {
+    "question": "千言项目 rag 节点下的三个检索参数分别配了多少？各是什么含义？",
+    "reference": "recall-top-n 为 20，是粗召回条数，向量路与 BM25 路各取 20 条、RRF 融合后也保留 20 条；rerank-top-k 为 5，是精排后最终喂给大模型的条数；rerank-min-score 为 0.2，是 qwen3-rerank 的相关性阈值，分数范围 0 到 1，低于 0.2 的候选直接丢弃。粗召回条数明显大于精排保留条数，是为了给精排足够的候选空间。"
+  },
+  {
+    "question": "千言项目 RagConfig 里现在有哪几个检索器 Bean？它们是怎么串起来的？",
+    "reference": "共四个：vectorContentRetriever（EmbeddingStoreContentRetriever，maxResults=20、minScore=0.75）、bm25ContentRetriever（PgBm25ContentRetriever，maxResults=20）、hybridContentRetriever（把前两者用 RRF k=60 融合取 20 条）、rerankingContentRetriever（把混合结果交给 qwen3-rerank 精排，过 0.2 阈值取 5 条）。串联顺序是向量与 BM25 并联粗召回 → RRF 融合 → rerank 精排，最终对外出口是 rerankingContentRetriever，AiChatService、EvalController 和 RagTool 都注入它。"
+  },
+  {
+    "question": "双编码器和交叉编码器分别用在检索的哪一步？各自的强弱在哪？",
+    "reference": "双编码器用于向量检索（粗召回），Query 和文档各编各的、压成定长向量后只比几何距离，文档向量可离线算好，扛得住百万级粗筛，但整篇文档在没见到 Query 时就被压进固定向量、token 级细节尽失，所以擅长捞得全、不擅长排得准。交叉编码器用于 rerank（精排），Query 与候选拼成一条序列一起喂进模型做全 attention 交互后由打分头输出相关性分数，精度远高但分数是这一对共同算出来的、无法预先建库，只配得上少量候选。"
+  },
+  {
+    "question": "叠加标题切分、混合检索和 Rerank 之后，千言的评测指标变化如何？",
+    "reference": "在同一份 153 题测试集上，忠实度由 0.9498 升至 0.9516，答案相关性由 0.7661 升至 0.7943，上下文精确率由 0.8449 升至 0.9208，上下文召回率由 0.8912 升至 0.9299，Hit@1 由 0.5106 升至 0.7730，Hit@3 由 0.6099 升至 0.8582，Hit@5 由 0.6809 升至 0.8865，负样本拒答准确率保持 1.0000，正样本误拒率由 0.0496 降至 0.0355。九项指标全面向好、无一回退，提升集中在检索侧。"
+  },
+  {
+    "question": "Hit@1 提升最明显，这说明改动主要解决了什么问题？",
+    "reference": "Hit@1 从 0.5106 升至 0.7730、提升约 26 个百分点，说明改动主要解决的是排序问题而不只是召回问题：rerank 精排解决了单路向量检索捞得全、排不准的毛病，BM25 补上了版本号、专名等字面匹配，粗召回扩到 20 条让原本落在第 6 到 20 名的正确片段得以进入最终 top-5。"
+  },
+  {
+    "question": "千言项目的 Agent Skills 运行时是靠哪个类实现的？渐进式披露分几层？",
+    "reference": "靠 SkillTool 一个类实现。渐进式披露只有两层：L1 是 catalog() 返回的技能清单（技能名加一句话描述），启动时拼好、常驻系统提示词每轮都发；L2 是 loadSkill 工具返回的 SKILL.md 正文，只有模型判断命中那轮才读取，避免挤占 Token。"
+  },
+  {
+    "question": "SkillTool 启动时是怎么扫描并加载技能的？",
+    "reference": "在 @PostConstruct 的 load 方法里，用 PathMatchingResourcePatternResolver 扫描 classpath*:skills/*/SKILL.md（classpath* 前缀保证 IDE 的 target/classes 和打包后的 jar 里都能扫到），用 frontmatter 的三个短横线把文件切成元数据与正文两段，读出 name 与 description 拼进技能清单、正文存进 bodies 这个 LinkedHashMap。单个技能缺 frontmatter 或 name/description 时只打错误日志并跳过，不拖垮启动。"
+  },
+  {
+    "question": "千言项目是怎么把技能清单注入系统提示词的？AiChat 接口要改吗？",
+    "reference": "在 AiChatService 构建 AiServices 时调用 .systemMessageTransformer(sm -> sm + \"\\n\\n\" + skillTool.catalog())，把技能清单追加到 @SystemMessage 读到的提示词后面。transformer 跑在 @SystemMessage 解析之后，所以 AiChat 接口一行都不用改。同时在 .tools(...) 末尾追加 skillTool，让模型能调用 loadSkill。"
+  },
+  {
+    "question": "kb-curator 这个技能是干什么的？它的执行步骤是怎样的？",
+    "reference": "kb-curator 负责把用户口述内容规范化后写入千言知识库，当用户表达「记一下 / 存到知识库 / 以后记住这个 / 帮我补一条知识」这类入库意图时触发。三步：第一步调用 searchKnowledge 查重，为空则新增、完全一致则告知不重复入库、同一问题答案不同则停下来问用户；第二步规范化，question 写成完整独立的疑问句、answer 第一句就给结论且只讲一件事、任何一行不能以三个井号开头；第三步调用 addKnowledgeToRag 写入并回报入库条数、规范化后的问题原文与写入文件名。"
+  },
+  {
+    "question": "为什么把动态知识植入做成 Skill，而不是直接写进系统提示词或工具描述？",
+    "reference": "三个缺口。缺能力：原先无条件追加写入不查重，重复内容压缩召回量、矛盾内容引发模型混乱，而框架自动注入检索结果、模型没有主动二次检索的能力，所以要新增 searchKnowledge 工具并规定先查后写、冲突确认。缺约束：项目特有的工程约束（如切分器只认三个井号）不是模型的先验常识。缺容器：完整入库要跨多个工具编排，单个工具描述承载不了，强行塞进系统提示词会抬高误触发率并浪费 Token，所以用按需加载的 Skill 作容器。"
+  },
+  {
+    "question": "RagTool 里 searchKnowledge 这个工具是干什么的？它复用了哪条链路？",
+    "reference": "searchKnowledge 让模型能主动查知识库，用于入库前查重或确认知识库里到底有没有某条内容。它注入 @Qualifier(\"rerankingContentRetriever\") 的检索器，复用线上那条两阶段检索链路，保证查重标准和回答时完全一致。检索为空返回可视为新知识，有命中则拼接片段交给模型判断是重复、冲突还是无关，异常时如实告知不要在没查重的情况下直接入库。"
+  },
+  {
+    "question": "addKnowledgeToRag 为什么要校验 ### 开头的行？校验失败为什么是返回而不是抛异常？",
+    "reference": "因为切分器按三级标题切块，正文里任何一行以三个井号开头都会被当成新块的起点、把一条知识劈成两半。校验失败返回一句话而不是抛异常，是把失败当作反馈交还给模型，让它自己按提示改写后重新调用，对话不中断。"
+  },
+  {
+    "question": "升级 LangChain4j 后 McpToolConfig 为什么要改？Lombok 又为什么要显式声明？",
+    "reference": "新版本中 HttpMcpTransport 将被弃用，不改虽然不会报错但代码会爆红，所以改用 StreamableHttpMcpTransport.Builder 构建传输层，URL 指向 https://open.bigmodel.cn/api/mcp/web_search/mcp，通过 customHeaders 传入 Authorization 请求头并开启 logRequests 与 logResponses。Lombok 在升级后不能再指望作为 langchain4j 的传递依赖被带进来，否则会报 lombok 不存在，所以要在 POM 里显式声明并设为 optional=true。"
+  },
+  {
+    "question": "混合检索里 RRF 的平滑常数 k，项目为什么不用 30 或 100，做过对比实验吗？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "千言项目的 BM25 索引重建一次，大概要花多长时间？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  },
+  {
+    "question": "SkillTool 最多能同时加载多少个 Skill？有没有数量上限配置？",
+    "reference": "根据现有资料无法回答。",
+    "is_negative": true
+  }
+]

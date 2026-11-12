@@ -1,0 +1,65 @@
+server:
+  port: 10010
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: InfiniteChat-Agent
+
+  profiles:
+    active: dev
+
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: ${MAIL_USERNAME} # 发件账号
+    password: ${MAIL_PASSWORD} # SMTP授权码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+logging:
+  level:
+    dev.langchain4j.mcp: ERROR
+
+
+langchain4j:
+  community:
+    dashscope:
+      chat-model:
+        model-name: qwen3-max
+        api-key: ${DASHSCOPE_API_KEY}
+      streaming-chat-model:
+        model-name: qwen3-max
+        api-key: ${DASHSCOPE_API_KEY}
+      embedding-model:
+        model-name: text-embedding-v4
+        api-key: ${DASHSCOPE_API_KEY}
+
+bigmodel:
+  api-key: ${SEARCH_MCP_API_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+rerank:
+  model-name: qwen3-rerank
+
+rag:
+  # 粗召回条数 Top-N：向量/BM25 各自召回、以及 RRF 融合后保留的候选数
+  recall-top-n: 20
+  # 精排后最终保留条数 Top-K：真正喂给大模型的资料条数
+  rerank-top-k: 5
+  # 精排相关性阈值：qwen3-rerank 分数范围 0~1，低于它的候选直接丢弃
+  rerank-min-score: 0.2
